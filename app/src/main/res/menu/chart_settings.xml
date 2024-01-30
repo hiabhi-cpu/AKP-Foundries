@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/color_menu"
+        android:title="Colors">
+
+        <menu>
+            <item
+                android:id="@+id/joyfull_color"
+                android:title="joyfull" />
+
+            <item
+                android:id="@+id/vordiplom_color"
+                android:title="vordiplom" />
+
+            <item
+                android:id="@+id/Material_color"
+                android:title="Material" />
+
+            <item
+                android:id="@+id/colorful_color"
+                android:title="colorful" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/animation_menu"
+        android:title="Animations">
+        <menu>
+            <item
+                android:id="@+id/animateX_menu"
+                android:title="AnimateX"/>
+            <item
+                android:id="@+id/animateY_menu"
+                android:title="AnimateY"/>
+            <item
+                android:id="@+id/animateXY_menu"
+                android:title="AminateXY"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/save_to_gallery_menu"
+        android:title="Save to Gallery "/>
+
+
+</menu>
