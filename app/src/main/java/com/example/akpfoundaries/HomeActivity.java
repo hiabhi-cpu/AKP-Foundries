@@ -34,9 +34,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         switch (item.getItemId()){
             case R.id.logout:
                 startActivity(new Intent(HomeActivity.this,LoginActivity.class));
-                edit.remove("LOGIN_NUMBER");
-                edit.remove("LOGIN_PASSWORD");
-                edit.commit();
+                edit.clear();
                 finish();
         }
         return false;
