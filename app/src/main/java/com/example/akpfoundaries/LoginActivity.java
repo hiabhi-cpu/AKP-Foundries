@@ -40,6 +40,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        sharedPreferences = getSharedPreferences("AKPSharedPreferenceFile",MODE_PRIVATE);
+        String user_number = sharedPreferences.getString(login_number,"");
+        String user_password = sharedPreferences.getString(login_password,"");
+        if(!(user_number.length() == 0) || !(user_password.length() == 0)){
+            checkUser(user_number,user_password);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             getSplashScreen().setOnExitAnimationListener(splashScreenView -> {
                 final ObjectAnimator slideUp = ObjectAnimator.ofFloat(
@@ -79,12 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-        sharedPreferences = getSharedPreferences("AKPSharedPreferenceFile",MODE_PRIVATE);
-        String user_number = sharedPreferences.getString(login_number,"");
-        String user_password = sharedPreferences.getString(login_password,"");
-        if(!(user_number.length() == 0) || !(user_password.length() == 0)){
-            checkUser(user_number,user_password);
-        }
+
         System.out.println("Setting content     ......................................................................................................................................");
         setContentView(R.layout.activity_login);
         if(getSupportActionBar() != null){

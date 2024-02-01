@@ -35,6 +35,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
             case R.id.logout:
                 startActivity(new Intent(HomeActivity.this,LoginActivity.class));
                 edit.clear();
+                edit.commit();
                 finish();
         }
         return false;
