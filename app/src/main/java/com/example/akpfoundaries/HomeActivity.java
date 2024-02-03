@@ -11,20 +11,12 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
-import com.squareup.picasso.Picasso;
-
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
@@ -62,9 +54,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         sliderView.startAutoCycle();
         initializeArrayWithImageUri();
 
-        Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_interesting_facts.png?alt=media&token=73affc4f-4874-411a-aca2-ed02a86c7503").into(interesting_facts_image);
+        Glide.with(this).load("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_interesting_facts.png?alt=media&token=73affc4f-4874-411a-aca2-ed02a86c7503").into(interesting_facts_image);
         initializeArrayWithImageUri2();
-        Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_quality_certification.png?alt=media&token=4df88a0a-c621-4e19-af1d-a9406abb0edd").into(quality_certification_image);
+        Glide.with(this).load("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_quality_certification.png?alt=media&token=4df88a0a-c621-4e19-af1d-a9406abb0edd").into(quality_certification_image);
         adapter2 = new SliderAdapter(this,imageUriList2,2);
         sliderView2.setSliderAdapter(adapter2);
         sliderView2.setIndicatorAnimation(IndicatorAnimationType.WORM);

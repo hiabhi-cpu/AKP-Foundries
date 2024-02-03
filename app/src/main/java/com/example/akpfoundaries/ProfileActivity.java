@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -117,7 +118,7 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null){
             profileImageUri = data.getData();
-            profileImageView.setImageURI(profileImageUri);
+            Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
             uploadToFirebase(profileImageUri);
         }
         else{

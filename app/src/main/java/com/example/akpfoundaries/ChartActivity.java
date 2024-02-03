@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ChartActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
-
     LineChart lineChart ;
     Button btn;
     LineDataSet dataSet;
@@ -114,45 +113,6 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
 
     }
 
-    private void animateChart() {
-        String animation = sharedPreferences.getString(chartAnimation,"");
-        Toast.makeText(this, animation, Toast.LENGTH_SHORT).show();
-        if(animation.length() != 0){
-            switch (animation){
-                case "animateX":
-                    lineChart.animateX(2500);
-                    break;
-                case "animateY":
-                    lineChart.animateY(2500);
-                    break;
-                case "animateXY":
-                    lineChart.animateXY(2000,2200, Easing.Linear);
-                    break;
-                case "noAnimation":
-                    lineChart.animateXY(0,0);
-                default:
-                    lineChart.animateXY(2000,2200, Easing.Linear);
-            }
-        }
-    }
-
-    private void setDataSetColor() {
-        String color = sharedPreferences.getString(chartColor,"");
-        if(color.length() != 0){
-            if(color.equals("JOYFUL_COLORS")){
-                dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
-            } else if (color.equals("MATERIAL_COLORS")) {
-                dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-            } else if (color.equals("VORDIPLOM_COLORS")) {
-                dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-            }else if(color.equals("COLORFUL_COLORS")){
-                dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-            }
-            else{
-            }
-        }
-    }
-
     private void getInitialDataAndAddLIstener(){
         databaseReference.child("data").addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,21 +133,6 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                 Toast.makeText(ChartActivity.this, "Unable to read data", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void showChart(ArrayList<Entry> firebaseData){
-        dataSet.clear();
-        dataSet.setValues(firebaseData);
-        dataSet.notifyDataSetChanged();
-        data.notifyDataChanged();
-        lineChart.clear();
-        lineChart.setData(data);
-        setDataSetColor();
-        if(start){
-            animateChart();
-            start = false;
-        }
-        lineChart.invalidate();
     }
 
     private void showAndSaveChartIMagePreview(){
@@ -247,19 +192,19 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                 showAndSaveChartIMagePreview();
                 return true;
             case R.id.animateX_menu:
-                lineChart.animateX(2500);
+                lineChart.animateX(2000);
                 edit.putString(chartAnimation,"animateX");
                 edit.commit();
                 Toast.makeText(this, "animateX", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.animateY_menu:
-                lineChart.animateY(2500);
+                lineChart.animateY(2000);
                 edit.putString(chartAnimation,"animateY");
                 edit.commit();
                 Toast.makeText(this, "animateY", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.animateXY_menu:
-                lineChart.animateXY(1000,2000);
+                lineChart.animateXY(1600,1800);
                 edit.putString(chartAnimation,"animateXY");
                 edit.commit();
                 Toast.makeText(this, "animateXY", Toast.LENGTH_SHORT).show();
@@ -290,5 +235,57 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                 return true;
         }
         return false;
+    }
+
+    private void showChart(ArrayList<Entry> firebaseData){
+        dataSet.clear();
+        dataSet.setValues(firebaseData);
+        dataSet.notifyDataSetChanged();
+        data.notifyDataChanged();
+        lineChart.clear();
+        lineChart.setData(data);
+        setDataSetColor();
+        if(start){
+            animateChart();
+            start = false;
+        }
+        lineChart.invalidate();
+    }
+
+    private void setDataSetColor() {
+        String color = sharedPreferences.getString(chartColor,"");
+        if(color.length() != 0){
+            if(color.equals("JOYFUL_COLORS")){
+                dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
+            } else if (color.equals("MATERIAL_COLORS")) {
+                dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+            } else if (color.equals("VORDIPLOM_COLORS")) {
+                dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            }else if(color.equals("COLORFUL_COLORS")){
+                dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+            }
+            else{
+            }
+        }
+    }
+
+    private void animateChart() {
+        String animation = sharedPreferences.getString(chartAnimation,"");
+        Toast.makeText(this, animation, Toast.LENGTH_SHORT).show();
+        if(animation.length() != 0){
+            switch (animation){
+                case "animateX":
+                    lineChart.animateX(2000);
+                    break;
+                case "animateY":
+                    lineChart.animateY(2000);
+                    break;
+                case "animateXY":
+                    lineChart.animateXY(1600,1800, Easing.Linear);
+                    break;
+                default:
+                    lineChart.animateXY(1600,1800, Easing.Linear);
+            }
+        }
     }
 }

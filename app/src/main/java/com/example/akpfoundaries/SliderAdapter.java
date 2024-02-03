@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.smarteist.autoimageslider.SliderViewAdapter;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.SliderAdapter
         // and setting that url for image inside our
         // image view using Picasso.
         final SliderData sliderItem = mSliderItems.get(position);
-        Picasso.get().load(sliderItem.getUri()).into(viewHolder.imageView);
+        Glide.with(context).load(sliderItem.getUri()).into(viewHolder.imageView);
     }
 
     @Override
