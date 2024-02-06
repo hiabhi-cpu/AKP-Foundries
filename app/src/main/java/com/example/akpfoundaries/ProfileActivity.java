@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 public class ProfileActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
 
@@ -66,17 +67,13 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
         sharedPreferences = getSharedPreferences("AKPSharedPreferenceFile",MODE_PRIVATE);
 
         userMobile = sharedPreferences.getString("LOGIN_NUMBER","");
-        profileImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent,2);
-            }
-        });
+
 
         addDataToProfile();
+    }
+
+    public void onClickImage(View view) {
+        CropImage.activity().start(ProfileActivity.this);
     }
 
     @Override
@@ -86,6 +83,7 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
                 startActivity(new Intent(ProfileActivity.this,HomeActivity.class));
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 finish();
+                return true;
             case R.id.bottom_chart:
                 startActivity(new Intent(ProfileActivity.this,ChartActivity.class));
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
@@ -113,16 +111,35 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
         });
     }
 
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null){
+//            profileImageUri = data.getData();
+//            Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
+//            uploadToFirebase(profileImageUri);
+//        }
+//        else{
+//            Toast.makeText(this, "Please select a image", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null){
-            profileImageUri = data.getData();
-            Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
-            uploadToFirebase(profileImageUri);
-        }
-        else{
-            Toast.makeText(this, "Please select a image", Toast.LENGTH_SHORT).show();
+        if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            CropImage.ActivityResult result=CropImage.getActivityResult(data);
+
+            if(resultCode==RESULT_OK){
+                profileImageUri=result.getUri();
+                Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
+                uploadToFirebase(profileImageUri);
+//                imageView.setImageURI(uri);
+            }
+            else if(resultCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                Exception e=result.getError();
+                Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
