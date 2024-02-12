@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         setContentView(R.layout.activity_home);
         sliderView = findViewById(R.id.sliderView);
         sliderView2 = findViewById(R.id.sliderView2);
-
+        sharedPreferences = getSharedPreferences("AKPSharedPreferenceFile",MODE_PRIVATE);
         interesting_facts_image = findViewById(R.id.akp_interesting_facts);
         quality_certification_image = findViewById(R.id.akp_quality_certification);
 
@@ -93,10 +93,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         SharedPreferences.Editor edit = sharedPreferences.edit();
         switch (item.getItemId()){
             case R.id.logout:
-                startActivity(new Intent(HomeActivity.this,LoginActivity.class));
                 edit.clear();
-                edit.commit();
+                edit.apply();
+                startActivity(new Intent(HomeActivity.this,LoginActivity.class));
                 finish();
+                return true;
         }
         return false;
     }

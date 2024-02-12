@@ -121,10 +121,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.hasChild(userNumber)){
                     final String getPassword = snapshot.child(userNumber).child("password").getValue(String.class);
+                    final String name = snapshot.child(userNumber).child("name").getValue(String.class);
                     if(getPassword.equals(userPassword)){
                         edit.putString("LOGIN_NUMBER",userNumber);
                         edit.putString("LOGIN_PASSWORD",userPassword);
-                        edit.commit();
+                        edit.putString("name",name);
+                        edit.apply();
                         Toast.makeText(LoginActivity.this, "Login Sucessful", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this,HomeActivity.class));
                         finish();
@@ -135,9 +137,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 else{
                     Toast.makeText(LoginActivity.this, "user not registered", Toast.LENGTH_SHORT).show();
-                    edit.remove(login_number);
-                    edit.remove(login_password);
-                    edit.commit();
                 }
             }
 

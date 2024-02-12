@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,7 +45,7 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
 
     private String userMobile;
 
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://akp-foundaries-default-rtdb.firebaseio.com/");
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://akp-foundaries-default-rtdb.firebaseio.com/").child("users");
 
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -53,22 +54,18 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        profileImageView = findViewById(R.id.profile_imageview);
+        addProfileImage();
         BottomNavigationView BottomNavigation = findViewById(R.id.bottom_navigation);
         BottomNavigation.setOnItemSelectedListener(this);
         BottomNavigation.setSelectedItemId(R.id.bottom_profile);
-
-        profileImageView = findViewById(R.id.profile_imageview);
         profileNameTextView = findViewById(R.id.profile_name_textview);
         profilePhoneTextView = findViewById(R.id.profile_phone_textview);
         profileProgressBar = findViewById(R.id.profile_progressBar);
         profileProgressBar.setVisibility(View.INVISIBLE);
-
-
         sharedPreferences = getSharedPreferences("AKPSharedPreferenceFile",MODE_PRIVATE);
-
         userMobile = sharedPreferences.getString("LOGIN_NUMBER","");
-
-
         addDataToProfile();
     }
 
@@ -95,35 +92,28 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
         return false;
     }
 
-    private void addDataToProfile(){
-        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+
+    public void addProfileImage(){
+        profileImageView.setImageResource(R.drawable.profile_person_icon);
+        final String[] profileUri = new String[1];
+        databaseReference.child(userMobile).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = snapshot.child(userMobile).child("name").getValue(String.class);
-                profileNameTextView.setText(name);
-                profilePhoneTextView.setText(userMobile);
+                if(snapshot.hasChild("profileImageUri")){
+                    profileUri[0] = snapshot.child("profileImageUri").getValue(String.class);
+                    Glide.with(getApplicationContext()).load(profileUri[0]).circleCrop().transition(DrawableTransitionOptions.withCrossFade()).into(profileImageView);
+                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null){
-//            profileImageUri = data.getData();
-//            Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
-//            uploadToFirebase(profileImageUri);
-//        }
-//        else{
-//            Toast.makeText(this, "Please select a image", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
+    private void addDataToProfile(){
+        profileNameTextView.setText(sharedPreferences.getString("name",""));
+        profilePhoneTextView.setText(userMobile);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -134,7 +124,6 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
                 profileImageUri=result.getUri();
                 Glide.with(this).load(profileImageUri).circleCrop().into(profileImageView);
                 uploadToFirebase(profileImageUri);
-//                imageView.setImageURI(uri);
             }
             else if(resultCode==CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
                 Exception e=result.getError();
@@ -142,12 +131,6 @@ public class ProfileActivity extends AppCompatActivity implements NavigationBarV
             }
         }
     }
-
-//    private String getFileExtension(Uri uri){
-//        ContentResolver resolver = getContentResolver();
-//        MimeTypeMap mime = MimeTypeMap.getSingleton();
-//        return mime.getExtensionFromMimeType(resolver.getType(uri));
-//    }
 
     private void uploadToFirebase(Uri imageuri){
         StorageReference ref = storageReference.child(userMobile);
