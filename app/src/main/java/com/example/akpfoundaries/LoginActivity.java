@@ -85,18 +85,15 @@ public class LoginActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-
         System.out.println("Setting content     ......................................................................................................................................");
         setContentView(R.layout.activity_login);
         if(getSupportActionBar() != null){
             getSupportActionBar().hide();
         }
-
         final EditText mobile = findViewById(R.id.login_mobile_number);
         final EditText password = findViewById(R.id.login_password);
         final TextView register = findViewById(R.id.login_register_now_btn);
         final Button login = findViewById(R.id.login_submit_btn);
-
         login.setOnClickListener(v -> {
             final String mobileTxt = mobile.getText().toString();
             final String passwordTxt = password.getText().toString();
@@ -107,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
                 checkUser(mobileTxt,passwordTxt);
             }
         });
-
         register.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
             finish();
@@ -139,7 +135,6 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "user not registered", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -147,7 +142,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
     public void dismiss(){
         new Handler().postDelayed(new Runnable() {
             @Override

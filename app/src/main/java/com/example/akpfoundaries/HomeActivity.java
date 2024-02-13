@@ -63,9 +63,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         sliderView2.setSliderTransformAnimation(SliderAnimations.DEPTHTRANSFORMATION);
         sliderView2.setScrollTimeInSec(3);
         sliderView2.startAutoCycle();
-
-
-
         BottomNavigationView BottomNavigation = findViewById(R.id.bottom_navigation);
         BottomNavigation.setOnItemSelectedListener(this);
         BottomNavigation.setSelectedItemId(R.id.bottom_home);
@@ -86,26 +83,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         imageUriList.add(new SliderData("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_slider3_image.jpg?alt=media&token=9fa878c4-2bf4-4904-a343-df8e65423ebf"));
         adapter.notifyDataSetChanged();
         Toast.makeText(this, "images loaded", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        SharedPreferences.Editor edit = sharedPreferences.edit();
-        switch (item.getItemId()){
-            case R.id.logout:
-                edit.clear();
-                edit.apply();
-                startActivity(new Intent(HomeActivity.this,LoginActivity.class));
-                finish();
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home_settings,menu);
-        return true;
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
