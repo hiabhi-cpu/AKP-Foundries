@@ -137,10 +137,9 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(LoginActivity.this, "Unable to login", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
     public void dismiss(){
         new Handler().postDelayed(new Runnable() {

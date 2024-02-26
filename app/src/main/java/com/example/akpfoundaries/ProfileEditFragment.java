@@ -31,8 +31,8 @@ public class ProfileEditFragment extends Fragment {
     ImageView profileImageView;
     ProgressBar progressBar;
     EditText profileNameEditText;
-    Button saveBtn;
-    Button cancelBtn;
+    TextView saveBtn;
+    TextView cancelBtn;
 
 
     public ProfileEditFragment() {
@@ -64,7 +64,6 @@ public class ProfileEditFragment extends Fragment {
                 if(!activity.getSupportFragmentManager().popBackStackImmediate("BACK_STACK",0)){
                     Toast.makeText(activity, "Fragment created", Toast.LENGTH_SHORT).show();
                     activity.getSupportFragmentManager().beginTransaction()
-                            .addToBackStack("BACK_STACK")
                             .setReorderingAllowed(true)
                             .replace(R.id.fragment_container,ProfileInfoFragment.class,null).commit();
                 }
