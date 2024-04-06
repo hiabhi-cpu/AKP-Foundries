@@ -12,8 +12,9 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
@@ -31,15 +32,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class ChartActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
     LineChart lineChart ;
-    Button btn;
+//    Button btn;
     LineDataSet dataSet;
     LineData data;
     SharedPreferences sharedPreferences;
+    TextView tempText;
+
+    TextView countText;
+    TextView timeTextView;
+    TextView batchCountTextView;
+    TextView totalCountTextView;
+
+    int lastPoint=0;
 
     private final String chartColor = "CHART_COLOR";
     private final String chartAnimation = "CHART_ANIMATION";
@@ -48,6 +60,8 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
 
     Random random = new Random();
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://akp-foundaries-default-rtdb.firebaseio.com/");
+
+    WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +71,12 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
 
         //Initialization
         lineChart = findViewById(R.id.lineChart);
-        btn = findViewById(R.id.add_btn);
+        tempText=findViewById(R.id.currentTemp);
+        countText=findViewById(R.id.currentBatch);
+        batchCountTextView=findViewById(R.id.batchCount);
+        totalCountTextView=findViewById(R.id.totalCount);
+        timeTextView=findViewById(R.id.timeView);
+//        btn = findViewById(R.id.add_btn);
         BottomNavigationView BottomNavigation = findViewById(R.id.bottom_navigation);
         BottomNavigation.setOnItemSelectedListener(this);
         BottomNavigation.setSelectedItemId(R.id.bottom_chart);
@@ -66,15 +85,24 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
         lineChart.setPinchZoom(true);
         lineChart.getDescription().setEnabled(false);
 
+
         //Initializing empty dataset and data
         dataSet = new LineDataSet(new ArrayList<Entry>(),"Temperature data");
 
-        //LimitLine
-        LimitLine limitLine = new LimitLine(1550);
+        //LimitLine bottom
+        LimitLine limitLine = new LimitLine(1350);
         limitLine.setLineColor(Color.RED);
         limitLine.setLineWidth(2f);
-        limitLine.setLabel("Temperature Limit");
+        limitLine.setLabel("Bottom Limit");
         limitLine.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
+
+        //LimitLine top
+        LimitLine limitLine1=new LimitLine(1420);
+        limitLine1.setLineColor(Color.RED);
+        limitLine1.setLineWidth(2f);
+        limitLine1.setLabel("Top Limit");
+        limitLine1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
+
 
         //LineData
         data=new LineData(dataSet);
@@ -91,32 +119,43 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
         //Y-Axis left
         YAxis yAxisLeft = lineChart.getAxisLeft();
         yAxisLeft.addLimitLine(limitLine);
-        yAxisLeft.setAxisLineWidth(2f);
+        yAxisLeft.addLimitLine(limitLine1);
+
+
 
         getInitialDataAndAddLIstener();
 
-        btn.setOnClickListener(view -> {
-            String id = databaseReference.child("data").push().getKey();
-            y = random.nextInt(700)+1000;
-            DataValuesModelClass dataValuesModelClass = new DataValuesModelClass(x++,y);
-            databaseReference.child("data").child(id).setValue(dataValuesModelClass);
-            Toast.makeText(ChartActivity.this, "Data added sucessfully", Toast.LENGTH_SHORT).show();
-        });
 
         Toast.makeText(this, sharedPreferences.getString(chartColor,""), Toast.LENGTH_SHORT).show();
 
+
+
     }
 
+
+
     private void getInitialDataAndAddLIstener(){
-        databaseReference.child("data").addValueEventListener(new ValueEventListener() {
+        databaseReference.child(getDate()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Entry> firebaseData = new ArrayList<>();
+                ArrayList<DataValuesModelClass> counterVar=new ArrayList<>();
+                int batchCount=0;
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+//                    Temperature temperature=dataSnapshot.getValue(Temperature.class);
+//                    firebaseData.add(new Entry(temperature.getTemperature(),temperature.getTime()));
                     DataValuesModelClass dataValuesModelClass = dataSnapshot.getValue(DataValuesModelClass.class);
+                    counterVar.add(dataValuesModelClass);
                     firebaseData.add(new Entry(dataValuesModelClass.getX(),dataValuesModelClass.getY()));
+                    batchCount=dataValuesModelClass.getBatch();
+                    timeTextView.setText(dataSnapshot.getKey()+"");
                 }
+                Toast.makeText(ChartActivity.this, ""+counterVar.size(), Toast.LENGTH_SHORT).show();
+                countText.setText(batchCount+"");
+                batchCountTextView.setText(batchCount+"."+getCurrentBatchCount(counterVar,batchCount));
+                totalCountTextView.setText(getTotalValidCount(counterVar)+"");
                 Toast.makeText(ChartActivity.this, "data read sucessfully", Toast.LENGTH_SHORT).show();
+                tempText.setText(firebaseData.get(firebaseData.size()-1).getY()+" ");
                 showChart(firebaseData);
             }
 
@@ -220,6 +259,7 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                 startActivity(new Intent(ChartActivity.this,HomeActivity.class));
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 finish();
+                return true;
             case R.id.bottom_chart:
                 return true;
             case R.id.bottom_profile:
@@ -238,6 +278,9 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
         data.notifyDataChanged();
         lineChart.clear();
         lineChart.setData(data);
+        lineChart.setVisibleXRangeMaximum(10);
+        lineChart.setDrawGridBackground(false);
+        lineChart.moveViewToX(57121);
         setDataSetColor();
         if(start){
             animateChart();
@@ -282,4 +325,36 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
             }
         }
     }
+
+    public String getDate(){
+        LocalDateTime currentDateTime = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return currentDateTime.format(formatter);
+        }
+        return "";
+    }
+
+    public int getCurrentBatchCount(ArrayList<DataValuesModelClass> data,int batch){
+        int count=0;
+        for(int i=0;i<data.size();i++){
+            if(data.get(i).getBatch()==batch && (data.get(i).getY()>=1350 && data.get(i).getY()<=1420)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getTotalValidCount(ArrayList<DataValuesModelClass> data){
+        int cnt=0;
+        for(int i=0;i<data.size();i++){
+            if(data.get(i).getY()>=1350 && data.get(i).getY()<=1420){
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+
 }
