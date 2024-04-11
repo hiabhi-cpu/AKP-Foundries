@@ -44,5 +44,9 @@
         android:id="@+id/save_to_gallery_menu"
         android:title="Save to Gallery "/>
 
+    <item
+        android:id="@+id/downloadExcel"
+        android:title="Download File"/>
+
 
 </menu>

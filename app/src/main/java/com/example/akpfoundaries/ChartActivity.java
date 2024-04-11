@@ -3,6 +3,8 @@ package com.example.akpfoundaries;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -13,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 public class ChartActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
@@ -150,13 +155,15 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                     batchCount=dataValuesModelClass.getBatch();
                     timeTextView.setText(dataSnapshot.getKey()+"");
                 }
-                Toast.makeText(ChartActivity.this, ""+counterVar.size(), Toast.LENGTH_SHORT).show();
-                countText.setText(batchCount+"");
-                batchCountTextView.setText(batchCount+"."+getCurrentBatchCount(counterVar,batchCount));
-                totalCountTextView.setText(getTotalValidCount(counterVar)+"");
-                Toast.makeText(ChartActivity.this, "data read sucessfully", Toast.LENGTH_SHORT).show();
-                tempText.setText(firebaseData.get(firebaseData.size()-1).getY()+" ");
-                showChart(firebaseData);
+                if(counterVar.size()!=0) {
+                    Toast.makeText(ChartActivity.this, "" + counterVar.size(), Toast.LENGTH_SHORT).show();
+                    countText.setText(batchCount + "");
+                    batchCountTextView.setText(batchCount + "." + getCurrentBatchCount(counterVar, batchCount));
+                    totalCountTextView.setText(getTotalValidCount(counterVar) + "");
+                    Toast.makeText(ChartActivity.this, "data read sucessfully", Toast.LENGTH_SHORT).show();
+                    tempText.setText(firebaseData.get(firebaseData.size() - 1).getY() + " ");
+                    showChart(firebaseData);
+                }
             }
 
             @Override
@@ -241,6 +248,9 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                 edit.putString(chartAnimation,"animateXY");
                 edit.commit();
                 Toast.makeText(this, "animateXY", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.downloadExcel:
+                downloadExcel();
                 return true;
         }
         return false;
@@ -354,6 +364,110 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
             }
         }
         return cnt;
+    }
+
+    public void downloadExcel(){
+//        Toast.makeText(this, "Download", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChartActivity.this);
+        builder.setTitle("Chart Image");
+        String selectedDate = getDate();
+        final View cutomLayout = getLayoutInflater().inflate(R.layout.alert_dialog_excel,null);
+        TextView datePickTextView=cutomLayout.findViewById(R.id.pickDateTextView);
+        datePickTextView.setText(getDate());
+
+
+
+        builder.setView(cutomLayout);
+        builder.setPositiveButton("Save", ((dialogInterface, i) -> {
+//            Toast.makeText(ChartActivity.this, datePickTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+            saveExcelData(datePickTextView.getText().toString());
+
+        }));
+        builder.setNegativeButton("cancel",((dialogInterface, i) -> {
+            Toast.makeText(ChartActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
+        }));
+        builder.setCancelable(true);
+        builder.setIcon(R.drawable.akp_foundaries_logo);
+        builder.setMessage("Save Chart Image To Library");
+
+        Button datePickButton=cutomLayout.findViewById(R.id.pickDateButton);
+        datePickButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar c = Calendar.getInstance();
+
+                // on below line we are getting
+                // our day, month and year.
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                // on below line we are creating a variable for date picker dialog.
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        // on below line we are passing context.
+                        ChartActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                // on below line we are setting date to our text view.
+                                if(monthOfYear+1<10){
+                                    datePickTextView.setText(dayOfMonth + "-0" + (monthOfYear + 1) + "-" + year);
+                                }
+                                else {
+                                    datePickTextView.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                }
+
+
+                            }
+                        },
+                        // on below line we are passing year,
+                        // month and day for selected date in our date picker.
+                        year, month, day);
+                // at last we are calling show to
+                // display our date picker dialog.
+                datePickerDialog.show();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void saveExcelData(String pickedDate) {
+        boolean result;
+        DataExcelClass dataExcelClass=new DataExcelClass();
+        databaseReference.child(pickedDate+"").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Toast.makeText(ChartActivity.this, snapshot.getChildrenCount()+"", Toast.LENGTH_SHORT).show();
+                if(snapshot.getValue()==null){
+                    Toast.makeText(ChartActivity.this, "No records on this Date"+pickedDate, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    ArrayList<ExcelDataContainClass> counterVar=new ArrayList<>();
+                    for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                        DataValuesModelClass dataValuesModelClass = dataSnapshot.getValue(DataValuesModelClass.class);
+                        if(dataValuesModelClass.getY()>=1350 && dataValuesModelClass.getY()<=1420){
+                            counterVar.add(new ExcelDataContainClass(  dataValuesModelClass,pickedDate,dataSnapshot.getKey()));
+                        }
+
+                    }
+                    if(counterVar.size()!=0 && dataExcelClass.exportDataIntoWorkbook(getApplicationContext(),pickedDate,counterVar)){
+                        Toast.makeText(ChartActivity.this, "Excel file downloaded", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(ChartActivity.this, "Error occured", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
