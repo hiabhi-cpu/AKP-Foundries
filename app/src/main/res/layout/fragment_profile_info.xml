@@ -67,21 +67,7 @@
                 android:gravity="left"
                 android:foreground="@drawable/button_background"
                 />
-            <TextView
-                android:id="@+id/still_thinking"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:gravity="left"
-                android:padding="10dp"
-                android:layout_marginTop="10dp"
-                android:text="Feature"
-                android:textColor="@color/black"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:foreground="@drawable/button_background"
-                />
+
             <TextView
                 android:id="@+id/logout_button"
                 android:layout_width="match_parent"
@@ -90,7 +76,7 @@
                 android:gravity="left"
                 android:padding="10dp"
                 android:layout_marginTop="10dp"
-                android:text="logout"
+                android:text="Logout"
                 android:textColor="@color/black"
                 android:clickable="true"
                 android:focusable="true"

@@ -131,7 +131,7 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
         getInitialDataAndAddLIstener();
 
 
-        Toast.makeText(this, sharedPreferences.getString(chartColor,""), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, sharedPreferences.getString(chartColor,""), Toast.LENGTH_SHORT).show();
 
 
 
@@ -156,11 +156,11 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
                     timeTextView.setText(dataSnapshot.getKey()+"");
                 }
                 if(counterVar.size()!=0) {
-                    Toast.makeText(ChartActivity.this, "" + counterVar.size(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ChartActivity.this, "" + counterVar.size(), Toast.LENGTH_SHORT).show();
                     countText.setText(batchCount + "");
                     batchCountTextView.setText(batchCount + "." + getCurrentBatchCount(counterVar, batchCount));
                     totalCountTextView.setText(getTotalValidCount(counterVar) + "");
-                    Toast.makeText(ChartActivity.this, "data read sucessfully", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ChartActivity.this, "data read sucessfully", Toast.LENGTH_SHORT).show();
                     tempText.setText(firebaseData.get(firebaseData.size() - 1).getY() + " ");
                     showChart(firebaseData);
                 }
@@ -188,7 +188,7 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
             Toast.makeText(ChartActivity.this, "Image Saved To Gallery", Toast.LENGTH_SHORT).show();
         }));
         builder.setNegativeButton("cancel",((dialogInterface, i) -> {
-            Toast.makeText(ChartActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ChartActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
         }));
         builder.setCancelable(true);
         builder.setIcon(R.drawable.akp_foundaries_logo);
@@ -369,7 +369,7 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
     public void downloadExcel(){
 //        Toast.makeText(this, "Download", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(ChartActivity.this);
-        builder.setTitle("Chart Image");
+        builder.setTitle("Excel Sheet");
         String selectedDate = getDate();
         final View cutomLayout = getLayoutInflater().inflate(R.layout.alert_dialog_excel,null);
         TextView datePickTextView=cutomLayout.findViewById(R.id.pickDateTextView);
@@ -383,12 +383,12 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
             saveExcelData(datePickTextView.getText().toString());
 
         }));
-        builder.setNegativeButton("cancel",((dialogInterface, i) -> {
-            Toast.makeText(ChartActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
+        builder.setNegativeButton("Cancel",((dialogInterface, i) -> {
+            Toast.makeText(ChartActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
         }));
         builder.setCancelable(true);
         builder.setIcon(R.drawable.akp_foundaries_logo);
-        builder.setMessage("Save Chart Image To Library");
+        builder.setMessage("Save Excel sheet");
 
         Button datePickButton=cutomLayout.findViewById(R.id.pickDateButton);
         datePickButton.setOnClickListener(new View.OnClickListener() {
@@ -441,7 +441,7 @@ public class ChartActivity extends AppCompatActivity implements NavigationBarVie
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                Toast.makeText(ChartActivity.this, snapshot.getChildrenCount()+"", Toast.LENGTH_SHORT).show();
                 if(snapshot.getValue()==null){
-                    Toast.makeText(ChartActivity.this, "No records on this Date"+pickedDate, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChartActivity.this, "No records on this Date "+pickedDate, Toast.LENGTH_SHORT).show();
                 }
                 else{
                     ArrayList<ExcelDataContainClass> counterVar=new ArrayList<>();

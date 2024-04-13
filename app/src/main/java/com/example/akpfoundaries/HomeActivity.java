@@ -82,7 +82,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationBarView
         adapter.notifyDataSetChanged();
         imageUriList.add(new SliderData("https://firebasestorage.googleapis.com/v0/b/akp-foundaries.appspot.com/o/AKP_home_images%2Fakp_slider3_image.jpg?alt=media&token=9fa878c4-2bf4-4904-a343-df8e65423ebf"));
         adapter.notifyDataSetChanged();
-        Toast.makeText(this, "images loaded", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "images loaded", Toast.LENGTH_SHORT).show();
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
